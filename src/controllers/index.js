@@ -51,6 +51,29 @@ controller.in =  (req, res) => {
 
 	let first_date;
 
+	class Cal{
+
+		get Show_result(){
+			return this.result();
+		}
+
+		result(){
+			first_date = new Date(foundData.firstDate);
+			data.transcurrido = Math.abs(first_date.getTime() - data.second_date.getTime());
+			data.days = Math.round(data.transcurrido / data.miliDay);
+			return data.days;
+		}
+
+		get Missing_Day(){
+			return this.missing();
+		}
+
+		missing(){
+			return 	data.missingDay  = Math.abs(data.days - 60);
+		}
+	}
+	let Days = new Cal();
+	
 	if(foundData === undefined){
 		pool.query('INSERT INTO usuario set ?', [newuser]);
 		res.sendFile(path.join(__dirname,'../public/second.html'))
@@ -60,27 +83,18 @@ controller.in =  (req, res) => {
 	}
 
 	function update(){
-		insertData();
-		 if(foundData.correo == data.emailTyped && data.days > 60 ){	
+		 if(foundData.correo == data.emailTyped && Days.Show_result > 60 ){	
 			pool.query('INSERT INTO usuario set ?', [newuser]);
 			res.sendFile(path.join(__dirname,'../public/second.html'))
 		
 		}else{
-			res.send("Debes de esperar para volverlo a intentar" + " " + data.missingDay + " " + "dias");
+			res.send("Debes de esperar para volverlo a intentar" + " " + Days.Missing_Day + " " + "dias");
 
 		}
 
 	}
 
-	function insertData(){
-		first_date =   new Date(foundData.firstDate);
-		data.transcurrido = Math.abs(first_date.getTime() - data.second_date.getTime());
-		data.days = Math.round(data.transcurrido / data.miliDay);
-		data.missingDay  = Math.abs(data.days - 60);
-	};
-
 	});
-	
 };
 
 controller.second = (req, res) => {
