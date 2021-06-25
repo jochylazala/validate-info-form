@@ -48,8 +48,14 @@ controller.in =  (req, res) => {
 		return typeEmail.correo === data.emailTyped;
 	}
 	let foundData = userData.find(Check_Data);
+	console.log(foundData)
 
 	let first_date;
+
+	function DeleteUser(){
+		pool.query('delete from usuario where id =?',[foundData.id]);
+
+	}
 
 	class Cal{
 
@@ -73,6 +79,7 @@ controller.in =  (req, res) => {
 		}
 	}
 	let Days = new Cal();
+
 	
 	if(foundData === undefined){
 		pool.query('INSERT INTO usuario set ?', [newuser]);
@@ -86,6 +93,7 @@ controller.in =  (req, res) => {
 		 if(foundData.correo == data.emailTyped && Days.Show_result > 60 ){	
 			pool.query('INSERT INTO usuario set ?', [newuser]);
 			res.sendFile(path.join(__dirname,'../public/second.html'))
+			DeleteUser();
 		
 		}else{
 			res.send("Debes de esperar para volverlo a intentar" + " " + Days.Missing_Day + " " + "dias");
@@ -95,8 +103,9 @@ controller.in =  (req, res) => {
 	}
 
 	});
-};
 
+};
+   
 controller.second = (req, res) => {
 	res.sendFile(path.join(__dirname,'../public/second.html'));
 }
