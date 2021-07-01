@@ -10,19 +10,17 @@ controller.index = (req, res) => {
 controller.in =  (req, res) => {
 	check.Data().then((result) =>{
 		var userData = Object.values(JSON.parse(JSON.stringify(result)))
-		const { nombre, correo, firstDate } = req.body;
+		const { name, email } = req.body;
 		const newuser = {
-			nombre,
-			correo,
-			firstDate
+			name,
+			email
 	};
 
 	class User{
-		constructor(emailTyped,date, milisecond, transcurrido, days, missingDay,hours,minutes,seconds,mili,second_date){
+		constructor(emailTyped, milisecond, daysElapsed, days, missingDay,hours,minutes,seconds,mili,second_date){
 			this.emailTyped = emailTyped;
-			this.date = date;
 			this.milisecond = milisecond;
-			this.transcurrido = transcurrido;
+			this.daysElapsed = daysElapsed;
 			this.days = days;
 			this.missingDay = missingDay;
 			this.hours = hours;
@@ -41,11 +39,11 @@ controller.in =  (req, res) => {
 		}
 	}
 	
-	let data = new User(newuser.correo, new Date(),0,0,0,0,24,60,60,1000, new Date());
-	newuser.firstDate = data.date; //that is for the date that will be sent to the database, the correct date
+	let data = new User(newuser.email,0,0,0,0,24,60,60,1000, new Date());
+	
 	
 	function Check_Data(typeEmail){
-		return typeEmail.correo === data.emailTyped;
+		return typeEmail.email === data.emailTyped;
 	}
 	let foundData = userData.find(Check_Data);
 	console.log(foundData)
@@ -65,8 +63,8 @@ controller.in =  (req, res) => {
 
 		result(){
 			first_date = new Date(foundData.firstDate);
-			data.transcurrido = Math.abs(first_date.getTime() - data.second_date.getTime());
-			data.days = Math.round(data.transcurrido / data.miliDay);
+			data.daysElapsed = Math.abs(first_date.getTime() - data.second_date.getTime());
+			data.days = Math.round(data.daysElapsed / data.miliDay);
 			return data.days;
 		}
 
@@ -90,7 +88,7 @@ controller.in =  (req, res) => {
 	}
 
 	function update(){
-		 if(foundData.correo == data.emailTyped && Days.Show_result > 60 ){	
+		 if(foundData.email == data.emailTyped && Days.Show_result > 60 ){	
 			pool.query('INSERT INTO usuario set ?', [newuser]);
 			res.sendFile(path.join(__dirname,'../public/second.html'))
 			DeleteUser();
